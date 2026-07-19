@@ -56,6 +56,42 @@ $$
 $$
 ```
 
+### HTML、代码、表格与 Mermaid
+
+正文支持常用的安全 HTML，例如 `details`、`summary`、`mark`、`kbd`、`figure` 和 `img`。出于安全考虑，`script`、`iframe`、表单、事件属性和危险链接等内容会被自动移除。
+
+代码块在开头的三个反引号后标注语言即可启用高亮和复制按钮，例如 `cpp`、`python`、`java`、`javascript`、`typescript`、`rust`、`go`、`sql`、`bash`、`json`、`yaml`、`html` 和 `css`：
+
+````markdown
+```cpp
+#include <iostream>
+
+int main() {
+    std::cout << "Hello" << '\n';
+}
+```
+````
+
+表格使用标准 Markdown 管道语法：
+
+```markdown
+| 算法 | 复杂度 |
+| --- | ---: |
+| Dijkstra | $O((n+m)\log n)$ |
+```
+
+Mermaid 图表使用 `mermaid` 代码围栏：
+
+````markdown
+```mermaid
+flowchart LR
+  A[读题] --> B{选择算法}
+  B --> C[实现与验证]
+```
+````
+
+Mermaid 以严格安全模式渲染，不支持 YAML front matter，单个图表源码上限为 20,000 个字符。
+
 ### 文章置顶
 
 在 front matter 中加入：

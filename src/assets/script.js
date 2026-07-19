@@ -1,3 +1,8 @@
+import {
+  enhanceCodeBlocks,
+  renderMermaidBlocks,
+} from "/assets/content-enhancements.mjs";
+
 const root = document.documentElement;
 const themeToggle = document.querySelector("#theme-toggle");
 const navToggle = document.querySelector("#nav-toggle");
@@ -7,6 +12,30 @@ const searchDialog = document.querySelector("#search-dialog");
 const searchClose = document.querySelector("#search-close");
 const searchInput = document.querySelector("#search-input");
 const searchResults = document.querySelector("#search-results");
+const renderedContent = document.querySelector(".rendered-content");
+
+let mermaidScriptPromise;
+
+function loadMermaid() {
+  if (window.mermaid) return Promise.resolve(window.mermaid);
+  mermaidScriptPromise ||= new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = "/assets/mermaid.min.js";
+    script.async = true;
+    script.addEventListener("load", () => resolve(window.mermaid), { once: true });
+    script.addEventListener("error", () => reject(new Error("Mermaid failed to load")), { once: true });
+    document.head.append(script);
+  });
+  return mermaidScriptPromise;
+}
+
+function renderArticleMermaid() {
+  if (!renderedContent) return Promise.resolve();
+  return renderMermaidBlocks(renderedContent, {
+    loadMermaid,
+    theme: root.dataset.theme === "dark" ? "dark" : "neutral",
+  });
+}
 
 function renderIcons() {
   if (window.lucide) {
@@ -35,6 +64,7 @@ themeToggle.addEventListener("click", () => {
   root.dataset.theme = nextTheme;
   localStorage.setItem("theme", nextTheme);
   updateThemeButton();
+  void renderArticleMermaid();
 });
 
 navToggle.addEventListener("click", () => {
@@ -152,3 +182,7 @@ document.querySelector("#current-year").textContent = new Date().getFullYear();
 updateThemeButton();
 renderIcons();
 loadCodeforcesProfile();
+if (renderedContent) {
+  enhanceCodeBlocks(renderedContent);
+  void renderArticleMermaid();
+}

@@ -14,6 +14,7 @@
     <link rel="alternate" type="application/rss+xml" title="{{ site.title }}" href="/feed.xml">
     <link rel="icon" href="/assets/avatar.png">
     <link rel="stylesheet" href="/assets/styles.css">
+    <link rel="stylesheet" href="/assets/article-content.css">
     <link rel="stylesheet" href="/assets/katex.min.css">
     <title>{% if title %}{{ title | escape }} · {% endif %}{{ site.name | escape }}</title>
     <script>
@@ -101,6 +102,6 @@
     </dialog>
 
     <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
-    <script src="/assets/script.js"></script>
+    <script type="module" src="/assets/script.js"></script>
   </body>
 </html>

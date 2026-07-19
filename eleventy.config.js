@@ -1,5 +1,34 @@
 const markdownIt = require("markdown-it");
 const markdownItKatex = require("@vscode/markdown-it-katex").default;
+const katex = require("katex");
+const DOMPurify = require("isomorphic-dompurify");
+const highlight = require("highlight.js/lib/core");
+
+const highlightLanguages = {
+  bash: require("highlight.js/lib/languages/bash"),
+  c: require("highlight.js/lib/languages/c"),
+  cpp: require("highlight.js/lib/languages/cpp"),
+  csharp: require("highlight.js/lib/languages/csharp"),
+  css: require("highlight.js/lib/languages/css"),
+  diff: require("highlight.js/lib/languages/diff"),
+  go: require("highlight.js/lib/languages/go"),
+  java: require("highlight.js/lib/languages/java"),
+  javascript: require("highlight.js/lib/languages/javascript"),
+  json: require("highlight.js/lib/languages/json"),
+  kotlin: require("highlight.js/lib/languages/kotlin"),
+  markdown: require("highlight.js/lib/languages/markdown"),
+  plaintext: require("highlight.js/lib/languages/plaintext"),
+  python: require("highlight.js/lib/languages/python"),
+  rust: require("highlight.js/lib/languages/rust"),
+  sql: require("highlight.js/lib/languages/sql"),
+  typescript: require("highlight.js/lib/languages/typescript"),
+  xml: require("highlight.js/lib/languages/xml"),
+  yaml: require("highlight.js/lib/languages/yaml"),
+};
+
+for (const [name, language] of Object.entries(highlightLanguages)) {
+  highlight.registerLanguage(name, language);
+}
 
 function compareBlogPosts(left, right) {
   const leftPinned = left.data.pinned === true;
@@ -15,21 +44,27 @@ function compareBlogPosts(left, right) {
   return right.date - left.date;
 }
 
-module.exports = function (eleventyConfig) {
+module.exports = async function (eleventyConfig) {
+  const {
+    createMarkdownRenderer,
+    sanitizeRenderedHtml,
+  } = await import("./shared/markdown.mjs");
+
   eleventyConfig.addPassthroughCopy("src/assets");
   eleventyConfig.addPassthroughCopy({
     "node_modules/katex/dist/katex.min.css": "assets/katex.min.css",
     "node_modules/katex/dist/fonts": "assets/fonts",
+    "shared/article-content.css": "assets/article-content.css",
+    "shared/content-enhancements.mjs": "assets/content-enhancements.mjs",
   });
+  eleventyConfig.addWatchTarget("shared");
 
-  const markdownLibrary = markdownIt({
-    breaks: false,
-    html: false,
-    linkify: true,
-    typographer: false,
-  }).use(markdownItKatex, {
-    errorColor: "#ed604d",
-    throwOnError: false,
+  const markdownLibrary = createMarkdownRenderer({
+    MarkdownIt: markdownIt,
+    highlight,
+    katex,
+    katexPlugin: markdownItKatex,
+    sanitize: (html) => sanitizeRenderedHtml(DOMPurify, html),
   });
   eleventyConfig.setLibrary("md", markdownLibrary);
 

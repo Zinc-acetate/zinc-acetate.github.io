@@ -1,7 +1,13 @@
 import DOMPurify from "dompurify";
 import "katex/dist/katex.min.css";
+import {
+  enhanceCodeBlocks,
+  renderMermaidBlocks,
+} from "../../shared/content-enhancements.mjs";
+import { sanitizeRenderedHtml } from "../../shared/markdown.mjs";
 import { renderMarkdown } from "./markdown.js";
 import "./styles.css";
+import "../../shared/article-content.css";
 
 const authView = document.querySelector("#auth-view");
 const editorView = document.querySelector("#editor-view");
@@ -39,6 +45,9 @@ let slugWasEdited = false;
 let readingWasEdited = false;
 let dirty = false;
 let publishing = false;
+let previewMermaidTimer = 0;
+let previewRenderVersion = 0;
+let mermaidModulePromise;
 
 function localDateTimeValue(date = new Date()) {
   const adjusted = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
@@ -75,10 +84,25 @@ function estimateReadingMinutes(content) {
 }
 
 function sanitizedMarkdown(content) {
-  return DOMPurify.sanitize(renderMarkdown(content), {
-    FORBID_TAGS: ["script", "iframe", "object", "embed", "form"],
-    USE_PROFILES: { html: true, mathMl: true },
-  });
+  return sanitizeRenderedHtml(DOMPurify, renderMarkdown(content));
+}
+
+function loadMermaid() {
+  mermaidModulePromise ||= import("mermaid").then((module) => module.default);
+  return mermaidModulePromise;
+}
+
+function schedulePreviewEnhancements() {
+  const version = ++previewRenderVersion;
+  window.clearTimeout(previewMermaidTimer);
+  enhanceCodeBlocks(previewContent);
+  previewMermaidTimer = window.setTimeout(async () => {
+    if (version !== previewRenderVersion) return;
+    await renderMermaidBlocks(previewContent, {
+      loadMermaid,
+      theme: "neutral",
+    });
+  }, 280);
 }
 
 function updatePreview() {
@@ -94,6 +118,7 @@ function updatePreview() {
 
   const content = contentInput.value.trim();
   previewContent.innerHTML = content ? sanitizedMarkdown(content) : "<p>Markdown 预览会显示在这里。</p>";
+  schedulePreviewEnhancements();
 }
 
 function markDirty() {

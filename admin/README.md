@@ -12,6 +12,8 @@ npm run dev
 
 仅在 Vite 开发模式下，可访问 `/?preview=editor` 检查编辑器界面。此入口会从生产构建中移除。
 
+编辑器与公开文章页共用同一套 Markdown 渲染规则，支持安全 HTML、KaTeX 公式、代码语言高亮与复制、Markdown 表格和 Mermaid。具体写法与安全限制见仓库根目录的 `README.md`。
+
 ## 验证
 
 ```powershell

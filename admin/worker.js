@@ -115,7 +115,7 @@ function securityHeaders(contentType) {
       "font-src 'self' data:",
       "form-action 'self' https://github.com",
       "frame-ancestors 'none'",
-      "img-src 'self' https://avatars.githubusercontent.com data:",
+      "img-src 'self' https: data:",
       "object-src 'none'",
       "script-src 'self'",
       "style-src 'self' 'unsafe-inline'",
