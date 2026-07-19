@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Zinc Acetate 的个人主页，记录开源项目、工程实践与持续探索。"
+    />
+    <meta name="theme-color" content="#f4f5f2" />
+    <meta property="og:title" content="Zinc Acetate · 个人主页" />
+    <meta
+      property="og:description"
+      content="在嵌入式、自动化与 AI 工具之间，构建真正能用的东西。"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="assets/avatar.png" />
+    <title>Zinc Acetate · 个人主页</title>
+    <link rel="icon" href="assets/avatar.png" />
+    <link rel="stylesheet" href="styles.css" />
+    <script>
+      document.documentElement.dataset.theme =
+        localStorage.getItem("theme") ||
+        (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳到主要内容</a>
+
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="wordmark" href="#top" aria-label="返回首页">
+          <span class="wordmark-mark" aria-hidden="true">ZA</span>
+          <span>Zinc Acetate</span>
+        </a>
+
+        <nav class="site-nav" id="site-nav" aria-label="主导航">
+          <a href="#projects">项目</a>
+          <a href="#about">关于</a>
+          <a href="https://github.com/Zinc-acetate" target="_blank" rel="noreferrer">GitHub</a>
+        </nav>
+
+        <div class="header-actions">
+          <button class="icon-button" id="theme-toggle" type="button" aria-label="切换深浅色主题">
+            <i data-lucide="sun" aria-hidden="true"></i>
+          </button>
+          <button
+            class="icon-button nav-toggle"
+            id="nav-toggle"
+            type="button"
+            aria-label="打开导航"
+            aria-controls="site-nav"
+            aria-expanded="false"
+          >
+            <i data-lucide="menu" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="hero" id="top" aria-labelledby="hero-title">
+        <div class="hero-inner">
+          <div class="hero-copy">
+            <p class="eyebrow"><span aria-hidden="true"></span> BUILDER · OPEN SOURCE</p>
+            <h1 id="hero-title">Zinc Acetate</h1>
+            <p class="hero-lead">在嵌入式、自动化与 AI 工具之间，构建真正能用的东西。</p>
+            <p class="hero-detail">
+              这里收录我的开源项目与技术实践。从 Linux 系统到智能工作流，持续学习，也持续交付。
+            </p>
+            <div class="hero-actions">
+              <a class="button button-primary" href="#projects">
+                查看项目 <i data-lucide="arrow-down-right" aria-hidden="true"></i>
+              </a>
+              <a
+                class="button button-secondary"
+                href="https://github.com/Zinc-acetate"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <i data-lucide="github" aria-hidden="true"></i> GitHub
+              </a>
+            </div>
+          </div>
+
+          <figure class="portrait">
+            <img src="assets/avatar.png" alt="Zinc Acetate 的头像" width="460" height="460" />
+            <figcaption>
+              <span>BASED ON GITHUB</span>
+              <span>EST. 2023</span>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="projects-section" id="projects" aria-labelledby="projects-title">
+        <div class="section-inner">
+          <header class="section-heading">
+            <div>
+              <p class="section-index">01 / SELECTED WORK</p>
+              <h2 id="projects-title">开源项目</h2>
+            </div>
+            <a class="text-link" href="https://github.com/Zinc-acetate?tab=repositories" target="_blank" rel="noreferrer">
+              全部仓库 <i data-lucide="arrow-up-right" aria-hidden="true"></i>
+            </a>
+          </header>
+
+          <div class="project-list">
+            <article class="project-card">
+              <div class="project-number" aria-hidden="true">01</div>
+              <div class="project-content">
+                <div class="project-meta">
+                  <span>Python</span>
+                  <span>AI · VIDEO</span>
+                </div>
+                <h3>produce-science-video</h3>
+                <p>
+                  面向 Codex 的自主中文科普视频制作 Skill，覆盖选题研究、动画、配音字幕、封面、发布物料与质量检查。
+                </p>
+              </div>
+              <a
+                class="project-link"
+                href="https://github.com/Zinc-acetate/produce-science-video"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="查看 produce-science-video 项目"
+              >
+                <i data-lucide="arrow-up-right" aria-hidden="true"></i>
+              </a>
+            </article>
+
+            <article class="project-card">
+              <div class="project-number" aria-hidden="true">02</div>
+              <div class="project-content">
+                <div class="project-meta">
+                  <span>C++</span>
+                  <span>LINUX · EMBEDDED</span>
+                </div>
+                <h3>imx6ull-linux-chat-system</h3>
+                <p>基于 IMX6ULL 和 Qt 5 的 Linux TCP/UDP 局域网聊天系统，探索嵌入式图形界面与网络通信。</p>
+              </div>
+              <a
+                class="project-link"
+                href="https://github.com/Zinc-acetate/imx6ull-linux-chat-system"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="查看 imx6ull-linux-chat-system 项目"
+              >
+                <i data-lucide="arrow-up-right" aria-hidden="true"></i>
+              </a>
+            </article>
+
+            <article class="project-card">
+              <div class="project-number" aria-hidden="true">03</div>
+              <div class="project-content">
+                <div class="project-meta">
+                  <span>Python</span>
+                  <span>BOT · CODEFORCES</span>
+                </div>
+                <h3>astrbot_plugin_codeforces_helper</h3>
+                <p>为 AstrBot 构建的 Codeforces 训练与 Rating 助手，让比赛数据和日常训练管理更容易获取。</p>
+              </div>
+              <a
+                class="project-link"
+                href="https://github.com/Zinc-acetate/astrbot_plugin_codeforces_helper"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="查看 astrbot_plugin_codeforces_helper 项目"
+              >
+                <i data-lucide="arrow-up-right" aria-hidden="true"></i>
+              </a>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="about-section" id="about" aria-labelledby="about-title">
+        <div class="section-inner about-grid">
+          <div>
+            <p class="section-index">02 / ABOUT</p>
+            <h2 id="about-title">保持好奇，<br />认真构建。</h2>
+          </div>
+          <div class="about-copy">
+            <p>
+              我关注软件如何从一个想法变成稳定、清晰、可复用的工具。目前的实践横跨 Python、C++、Linux 与 AI 自动化。
+            </p>
+            <p>
+              项目代码和最新动态都在 GitHub。欢迎从一个 Issue、一条建议，或一次新的协作开始交流。
+            </p>
+            <a class="button button-dark" href="https://github.com/Zinc-acetate" target="_blank" rel="noreferrer">
+              访问 GitHub <i data-lucide="arrow-up-right" aria-hidden="true"></i>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <span>© <span id="current-year"></span> Zinc Acetate</span>
+        <span>Built with curiosity.</span>
+      </div>
+    </footer>
+
+    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
