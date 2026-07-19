@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f3f3ef">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Zinc Acetate Blog Admin</title>
+    <script type="module" src="/src/main.js"></script>
+  </head>
+  <body>
+    <div class="admin-app">
+      <header class="admin-header">
+        <a class="admin-brand" href="/" aria-label="博客管理首页">
+          <span>ZA</span>
+          <strong>Blog Admin</strong>
+        </a>
+        <div class="account-actions" id="account-actions" hidden>
+          <img id="account-avatar" alt="" width="32" height="32">
+          <span id="account-name"></span>
+          <button class="quiet-button" id="logout-button" type="button">退出</button>
+        </div>
+      </header>
+
+      <main>
+        <section class="auth-view" id="auth-view">
+          <div>
+            <p class="overline">SECURE / GITHUB APP</p>
+            <h1>博客管理</h1>
+            <p>使用已授权的 GitHub 账号进入。</p>
+            <a class="primary-button" href="/api/auth/login">使用 GitHub 登录</a>
+          </div>
+        </section>
+
+        <section class="editor-view" id="editor-view" hidden>
+          <form id="post-form">
+            <div class="editor-layout">
+              <aside class="metadata-panel" aria-labelledby="settings-title">
+                <div class="panel-heading">
+                  <p>01 / SETTINGS</p>
+                  <h1 id="settings-title">新建文章</h1>
+                </div>
+
+                <label class="field">
+                  <span>标题</span>
+                  <input id="post-title" name="title" type="text" maxlength="120" required>
+                </label>
+
+                <label class="field">
+                  <span>文件标识</span>
+                  <input
+                    id="post-slug"
+                    name="slug"
+                    type="text"
+                    maxlength="80"
+                    pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
+                    required
+                  >
+                </label>
+
+                <label class="field">
+                  <span>摘要</span>
+                  <textarea id="post-description" name="description" rows="3" maxlength="240" required></textarea>
+                </label>
+
+                <div class="field-grid">
+                  <label class="field">
+                    <span>分类</span>
+                    <input id="post-category" name="category" type="text" maxlength="40" value="题解" required>
+                  </label>
+                  <label class="field">
+                    <span>阅读分钟</span>
+                    <input id="post-reading" name="readingMinutes" type="number" min="1" max="999" value="1" required>
+                  </label>
+                </div>
+
+                <label class="field">
+                  <span>发布时间</span>
+                  <input id="post-date" name="publishedAt" type="datetime-local" required>
+                </label>
+
+                <label class="field">
+                  <span>标签</span>
+                  <input id="post-tags" name="tags" type="text" maxlength="240" placeholder="算法, 动态规划">
+                </label>
+
+                <div class="pin-settings">
+                  <label class="toggle-field">
+                    <input id="post-pinned" name="pinned" type="checkbox">
+                    <span>置顶文章</span>
+                  </label>
+                  <label class="field compact-field">
+                    <span>置顶顺序</span>
+                    <input id="post-pin-order" name="pinOrder" type="number" min="1" max="999" value="10" disabled>
+                  </label>
+                </div>
+              </aside>
+
+              <section class="writing-workspace" aria-label="文章编辑区">
+                <div class="workspace-toolbar">
+                  <div>
+                    <strong>Markdown</strong>
+                    <span id="document-state">未发布</span>
+                  </div>
+                  <div class="mode-control" role="group" aria-label="编辑视图">
+                    <button type="button" data-mode="edit">编辑</button>
+                    <button type="button" data-mode="split" aria-pressed="true">分栏</button>
+                    <button type="button" data-mode="preview">预览</button>
+                  </div>
+                </div>
+
+                <div class="editor-grid" id="editor-grid" data-mode="split">
+                  <div class="editor-pane">
+                    <label for="post-content">正文</label>
+                    <textarea
+                      id="post-content"
+                      name="content"
+                      spellcheck="false"
+                      placeholder="# 从这里开始"
+                      required
+                    ></textarea>
+                  </div>
+
+                  <div class="preview-pane" aria-live="polite">
+                    <article class="preview-article">
+                      <header>
+                        <div class="preview-meta">
+                          <span id="preview-category">题解</span>
+                          <time id="preview-date"></time>
+                          <span id="preview-reading">1 min</span>
+                        </div>
+                        <h1 id="preview-title">未命名文章</h1>
+                        <p id="preview-description"></p>
+                      </header>
+                      <div class="preview-content" id="preview-content">
+                        <p>Markdown 预览会显示在这里。</p>
+                      </div>
+                    </article>
+                  </div>
+                </div>
+
+                <footer class="publish-bar">
+                  <p id="publish-status" aria-live="polite"></p>
+                  <button class="primary-button" id="publish-button" type="submit">发布文章</button>
+                </footer>
+              </section>
+            </div>
+          </form>
+        </section>
+      </main>
+    </div>
+
+    <dialog class="confirm-dialog" id="confirm-dialog">
+      <form method="dialog">
+        <p class="overline">PUBLISH / CONFIRM</p>
+        <h2>确认发布文章？</h2>
+        <dl id="confirm-summary"></dl>
+        <div class="dialog-actions">
+          <button class="quiet-button" value="cancel">取消</button>
+          <button class="primary-button" id="confirm-publish" value="default">确认发布</button>
+        </div>
+      </form>
+    </dialog>
+  </body>
+</html>

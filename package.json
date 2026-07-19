@@ -4,11 +4,17 @@
   "private": true,
   "description": "Zinc Acetate 的算法竞赛个人博客",
   "scripts": {
-    "build": "eleventy",
-    "dev": "eleventy --serve",
-    "debug": "DEBUG=Eleventy* eleventy"
+    "build": "node scripts/clean-site.js && eleventy",
+    "dev": "node scripts/clean-site.js && eleventy --serve",
+    "debug": "DEBUG=Eleventy* eleventy",
+    "test": "node --test tests/eleventy.test.js"
   },
   "devDependencies": {
     "@11ty/eleventy": "3.1.6"
+  },
+  "dependencies": {
+    "@vscode/markdown-it-katex": "1.1.2",
+    "katex": "0.16.47",
+    "markdown-it": "14.3.0"
   }
 }

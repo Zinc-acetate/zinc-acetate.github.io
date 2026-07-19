@@ -4,6 +4,8 @@
 
 博客使用 [Eleventy](https://www.11ty.dev/) 生成。文章写成 Markdown，首页、归档、搜索索引、RSS 和站点地图会在构建时自动更新。
 
+项目列表位于 `/projects/`，由 GitHub Actions 每天构建时自动读取公开仓库。首页只保留项目页面入口。
+
 ## 本地预览
 
 ```powershell
@@ -42,6 +44,37 @@ git push
 
 GitHub Actions 会自动构建并发布。
 
+### 数学公式
+
+行内公式使用 `$...$`，块级公式使用 `$$...$$`：
+
+```markdown
+行内公式 $O(n \log n)$。
+
+$$
+\sum_{i=1}^{n} i = \frac{n(n+1)}{2}
+$$
+```
+
+### 文章置顶
+
+在 front matter 中加入：
+
+```yaml
+pinned: true
+pinOrder: 10
+```
+
+置顶文章优先按 `pinOrder` 从小到大排列；其他文章按发布时间倒序排列。
+
+## 管理后台
+
+安全管理后台部署在 Cloudflare Worker：
+
+<https://zinc-blog-admin.zincacetatecsx.workers.dev/>
+
+后台通过仅安装在博客仓库上的 GitHub App 登录，支持 Markdown、KaTeX 实时预览、置顶和直接创建文章。部署与安全配置见 `admin/README.md`。
+
 ## 主要目录
 
 - `src/posts/`：Markdown 文章
@@ -50,4 +83,6 @@ GitHub Actions 会自动构建并发布。
 - `src/assets/script.js`：导航、搜索、实时数据和项目加载
 - `src/index.njk`：首页
 - `src/archive.njk`：文章归档
+- `src/projects.njk`：项目页面
 - `src/about.njk`：关于页面
+- `admin/`：Cloudflare Worker 管理后台

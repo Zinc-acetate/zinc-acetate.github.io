@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{{ description or site.description }}">
+    <meta name="description" content="{{ (description or site.description) | escape }}">
     <meta name="theme-color" content="#f3f3ef">
-    <meta property="og:title" content="{% if title %}{{ title }} · {% endif %}{{ site.name }}">
-    <meta property="og:description" content="{{ description or site.description }}">
+    <meta property="og:title" content="{% if title %}{{ title | escape }} · {% endif %}{{ site.name | escape }}">
+    <meta property="og:description" content="{{ (description or site.description) | escape }}">
     <meta property="og:type" content="{% if layout == 'layouts/post.njk' %}article{% else %}website{% endif %}">
     <meta property="og:url" content="{{ site.url }}{{ page.url }}">
     <meta property="og:image" content="{{ site.url }}/assets/avatar.png">
@@ -14,7 +14,8 @@
     <link rel="alternate" type="application/rss+xml" title="{{ site.title }}" href="/feed.xml">
     <link rel="icon" href="/assets/avatar.png">
     <link rel="stylesheet" href="/assets/styles.css">
-    <title>{% if title %}{{ title }} · {% endif %}{{ site.name }}</title>
+    <link rel="stylesheet" href="/assets/katex.min.css">
+    <title>{% if title %}{{ title | escape }} · {% endif %}{{ site.name | escape }}</title>
     <script>
       document.documentElement.dataset.theme =
         localStorage.getItem("theme") ||
@@ -37,6 +38,7 @@
         <nav class="site-nav" id="site-nav" aria-label="主导航">
           <a href="/" {% if page.url == '/' %}aria-current="page"{% endif %}>首页</a>
           <a href="/archive/" {% if page.url == '/archive/' %}aria-current="page"{% endif %}>文章</a>
+          <a href="/projects/" {% if page.url == '/projects/' %}aria-current="page"{% endif %}>项目</a>
           <a href="/about/" {% if page.url == '/about/' %}aria-current="page"{% endif %}>关于</a>
           <a href="{{ site.github }}" target="_blank" rel="noreferrer">GitHub</a>
         </nav>

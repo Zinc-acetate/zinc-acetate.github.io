@@ -7,12 +7,12 @@ layout: layouts/base.njk
       <i data-lucide="arrow-left" aria-hidden="true"></i> 返回文章列表
     </a>
     <div class="article-kicker">
-      <span>{{ category }}</span>
+      <span>{{ category | escape }}</span>
       <time datetime="{{ date | htmlDate }}">{{ date | readableDate }}</time>
-      <span>{{ readingTime }}</span>
+      <span>{{ readingTime | escape }}</span>
     </div>
-    <h1>{{ title }}</h1>
-    <p>{{ description }}</p>
+    <h1>{{ title | escape }}</h1>
+    <p>{{ description | escape }}</p>
   </header>
 
   <div class="article-layout">
