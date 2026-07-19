@@ -40,6 +40,7 @@
           <a href="/archive/" {% if page.url == '/archive/' %}aria-current="page"{% endif %}>文章</a>
           <a href="/projects/" {% if page.url == '/projects/' %}aria-current="page"{% endif %}>项目</a>
           <a href="/about/" {% if page.url == '/about/' %}aria-current="page"{% endif %}>关于</a>
+          <a href="{{ site.admin }}" target="_blank" rel="noreferrer">管理</a>
           <a href="{{ site.github }}" target="_blank" rel="noreferrer">GitHub</a>
         </nav>
 
@@ -76,6 +77,7 @@
         </div>
         <div class="footer-links">
           <a href="/feed.xml">RSS</a>
+          <a href="{{ site.admin }}" target="_blank" rel="noreferrer">管理</a>
           <a href="{{ site.github }}" target="_blank" rel="noreferrer">GitHub</a>
           <span>© <span id="current-year"></span></span>
         </div>

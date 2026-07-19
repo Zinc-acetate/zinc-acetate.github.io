@@ -1,30 +1,7 @@
 import DOMPurify from "dompurify";
-import MarkdownIt from "markdown-it";
-import markdownItKatexModule from "@vscode/markdown-it-katex";
 import "katex/dist/katex.min.css";
+import { renderMarkdown } from "./markdown.js";
 import "./styles.css";
-
-const markdownItKatex =
-  typeof markdownItKatexModule === "function"
-    ? markdownItKatexModule
-    : markdownItKatexModule.default;
-
-const markdown = new MarkdownIt({
-  breaks: false,
-  html: false,
-  linkify: true,
-  typographer: false,
-}).use(markdownItKatex, {
-  errorColor: "#ed604d",
-  throwOnError: false,
-});
-
-const defaultLinkOpen = markdown.renderer.rules.link_open || ((tokens, index, options, env, self) => self.renderToken(tokens, index, options));
-markdown.renderer.rules.link_open = (tokens, index, options, env, self) => {
-  tokens[index].attrSet("target", "_blank");
-  tokens[index].attrSet("rel", "noreferrer noopener");
-  return defaultLinkOpen(tokens, index, options, env, self);
-};
 
 const authView = document.querySelector("#auth-view");
 const editorView = document.querySelector("#editor-view");
@@ -98,7 +75,7 @@ function estimateReadingMinutes(content) {
 }
 
 function sanitizedMarkdown(content) {
-  return DOMPurify.sanitize(markdown.render(content), {
+  return DOMPurify.sanitize(renderMarkdown(content), {
     FORBID_TAGS: ["script", "iframe", "object", "embed", "form"],
     USE_PROFILES: { html: true, mathMl: true },
   });
