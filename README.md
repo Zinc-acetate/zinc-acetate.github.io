@@ -1,36 +1,53 @@
-# Zinc Acetate 的 GitHub Pages
+# Zinc Acetate 的算法竞赛博客
 
-这是部署在 `https://zinc-acetate.github.io/` 的个人主页，使用原生 HTML、CSS 和 JavaScript 编写。
+部署地址：<https://zinc-acetate.github.io/>
+
+博客使用 [Eleventy](https://www.11ty.dev/) 生成。文章写成 Markdown，首页、归档、搜索索引、RSS 和站点地图会在构建时自动更新。
 
 ## 本地预览
 
-在仓库目录运行：
-
 ```powershell
-npx serve .
+npm install
+npm run dev
 ```
 
-然后打开命令行显示的本地地址。
+打开命令行显示的本地地址。修改文件后，页面会自动重新构建。
 
-## 更新网站
+## 发布新文章
 
-1. 修改 `index.html`、`styles.css` 或 `script.js`。
-2. 在浏览器中本地检查效果。
-3. 提交并推送到 `main` 分支：
+在 `src/posts/` 新建 Markdown 文件：
+
+```markdown
+---
+title: 文章标题
+description: 一句话摘要
+date: 2026-07-19
+category: 题解
+readingTime: 6 min
+tags:
+  - posts
+  - 题解
+---
+
+从这里开始写正文。
+```
+
+文件名建议使用 `年-月-日-英文短标题.md`。完成后提交并推送：
 
 ```powershell
 git add .
-git commit -m "描述这次修改"
+git commit -m "Add a new post"
 git push
 ```
 
-推送后，`.github/workflows/pages.yml` 会自动发布网站。通常 1 到 3 分钟后线上内容就会更新。
+GitHub Actions 会自动构建并发布。
 
-## 文件结构
+## 主要目录
 
-- `index.html`：主页内容与结构
-- `styles.css`：页面视觉样式和响应式布局
-- `script.js`：主题切换、移动端导航等交互
-- `404.html`：自定义未找到页面
-- `assets/`：图片等静态资源
-- `.github/workflows/pages.yml`：GitHub Pages 自动部署流程
+- `src/posts/`：Markdown 文章
+- `src/_includes/layouts/`：公共页面模板
+- `src/assets/styles.css`：全站样式
+- `src/assets/script.js`：导航、搜索、实时数据和项目加载
+- `src/index.njk`：首页
+- `src/archive.njk`：文章归档
+- `src/about.njk`：关于页面

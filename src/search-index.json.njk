@@ -1,0 +1,15 @@
+---
+permalink: /search-index.json
+eleventyExcludeFromCollections: true
+---
+[
+{%- for post in collections.blogPosts -%}
+  {
+    "title": {{ post.data.title | json | safe }},
+    "description": {{ post.data.description | json | safe }},
+    "category": {{ post.data.category | json | safe }},
+    "date": {{ post.date | htmlDate | json | safe }},
+    "url": {{ post.url | json | safe }}
+  }{% if not loop.last %},{% endif %}
+{%- endfor -%}
+]
