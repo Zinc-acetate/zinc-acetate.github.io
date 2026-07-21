@@ -2,6 +2,12 @@ import {
   enhanceCodeBlocks,
   renderMermaidBlocks,
 } from "/assets/content-enhancements.mjs";
+import {
+  initPointerDepth,
+  initRevealEffects,
+  initScrollProgress,
+  initSignalCanvas,
+} from "/assets/site-effects.mjs";
 
 const root = document.documentElement;
 const themeToggle = document.querySelector("#theme-toggle");
@@ -15,6 +21,7 @@ const searchResults = document.querySelector("#search-results");
 const renderedContent = document.querySelector(".rendered-content");
 
 let mermaidScriptPromise;
+const signalScene = initSignalCanvas();
 
 function loadMermaid() {
   if (window.mermaid) return Promise.resolve(window.mermaid);
@@ -47,8 +54,9 @@ function updateThemeButton() {
   const isDark = root.dataset.theme === "dark";
   themeToggle.setAttribute("aria-label", isDark ? "切换到浅色主题" : "切换到深色主题");
   themeToggle.innerHTML = `<i data-lucide="${isDark ? "moon" : "sun"}" aria-hidden="true"></i>`;
-  document.querySelector('meta[name="theme-color"]').content = isDark ? "#121411" : "#f3f3ef";
+  document.querySelector('meta[name="theme-color"]').content = isDark ? "#090e0d" : "#eef1ef";
   renderIcons();
+  signalScene.refresh();
 }
 
 function closeNavigation() {
@@ -78,7 +86,7 @@ navToggle.addEventListener("click", () => {
 nav.querySelectorAll("a").forEach((link) => link.addEventListener("click", closeNavigation));
 
 window.addEventListener("resize", () => {
-  if (window.innerWidth > 760 && nav.classList.contains("is-open")) {
+  if (window.innerWidth > 860 && nav.classList.contains("is-open")) {
     closeNavigation();
   }
 });
@@ -182,6 +190,9 @@ document.querySelector("#current-year").textContent = new Date().getFullYear();
 updateThemeButton();
 renderIcons();
 loadCodeforcesProfile();
+initRevealEffects();
+initScrollProgress();
+initPointerDepth();
 if (renderedContent) {
   enhanceCodeBlocks(renderedContent);
   void renderArticleMermaid();

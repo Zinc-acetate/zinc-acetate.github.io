@@ -5,7 +5,7 @@ description: Zinc Acetate 的公开 GitHub 项目。
 permalink: /projects/index.html
 ---
 <section class="page-heading">
-  <div class="page-width">
+  <div class="page-width" data-reveal>
     <p class="overline"><span aria-hidden="true"></span> CODE / PROJECTS</p>
     <h1>项目</h1>
     <p>公开仓库与一些阶段性的实践记录。内容每天从 GitHub 自动同步。</p>
@@ -14,7 +14,7 @@ permalink: /projects/index.html
 
 <section class="projects-section" aria-labelledby="projects-title">
   <div class="page-width">
-    <header class="section-header">
+    <header class="section-header" data-reveal>
       <div>
         <p class="section-label">01 / REPOSITORIES</p>
         <h2 id="projects-title">公开仓库</h2>
@@ -25,7 +25,7 @@ permalink: /projects/index.html
     </header>
     <div class="project-grid">
 {% for project in projects %}
-      <a class="project-card" href="{{ project.html_url }}" target="_blank" rel="noreferrer">
+      <a class="project-card" href="{{ project.html_url }}" target="_blank" rel="noreferrer" data-reveal data-pointer-depth>
         <div class="project-topline">
           <span>{{ project.language | escape }}</span>
           <i data-lucide="arrow-up-right" aria-hidden="true"></i>

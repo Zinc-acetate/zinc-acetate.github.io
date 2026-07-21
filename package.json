@@ -10,7 +10,7 @@
     "build": "node scripts/clean-site.js && node scripts/build-browser-assets.js && eleventy",
     "dev": "node scripts/clean-site.js && node scripts/build-browser-assets.js && eleventy --serve",
     "debug": "DEBUG=Eleventy* eleventy",
-    "test": "node --test tests/eleventy.test.js tests/markdown.test.mjs tests/content-enhancements.test.mjs"
+    "test": "node --test tests/eleventy.test.js tests/markdown.test.mjs tests/content-enhancements.test.mjs tests/site-effects.test.mjs"
   },
   "devDependencies": {
     "@11ty/eleventy": "3.1.6",

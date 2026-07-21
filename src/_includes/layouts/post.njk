@@ -2,7 +2,7 @@
 layout: layouts/base.njk
 ---
 <article class="article-shell">
-  <header class="article-header">
+  <header class="article-header" data-reveal>
     <a class="back-link" href="/archive/">
       <i data-lucide="arrow-left" aria-hidden="true"></i> 返回文章列表
     </a>
@@ -15,7 +15,7 @@ layout: layouts/base.njk
     <p>{{ description | escape }}</p>
   </header>
 
-  <div class="article-layout">
+  <div class="article-layout" data-reveal>
     <aside class="article-rail" aria-label="文章信息">
       <span>WRITTEN BY</span>
       <strong>{{ site.author }}</strong>
@@ -26,7 +26,7 @@ layout: layouts/base.njk
     </div>
   </div>
 
-  <footer class="article-footer">
+  <footer class="article-footer" data-reveal>
     <p>继续阅读与训练。</p>
     <a class="text-link" href="/archive/">查看全部文章 <i data-lucide="arrow-right" aria-hidden="true"></i></a>
   </footer>

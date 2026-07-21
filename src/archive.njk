@@ -5,7 +5,7 @@ description: Zinc Acetate 的算法题解、比赛复盘、训练记录与站点
 permalink: /archive/index.html
 ---
 <section class="page-heading">
-  <div class="page-width">
+  <div class="page-width" data-reveal>
     <p class="overline"><span aria-hidden="true"></span> WRITING / ARCHIVE</p>
     <h1>文章归档</h1>
     <p>题解、复盘与训练过程中留下的笔记。</p>
@@ -14,13 +14,13 @@ permalink: /archive/index.html
 
 <section class="archive-section">
   <div class="page-width archive-layout">
-    <div class="archive-index">
+    <div class="archive-index" data-reveal>
       <span>{{ collections.blogPosts.length }}</span>
       <p>ARTICLES<br>AND COUNTING</p>
     </div>
     <div class="post-list archive-list">
 {% for post in collections.blogPosts %}
-        <article class="post-row">
+        <article class="post-row" data-reveal>
           <div class="post-date">
             <time datetime="{{ post.date | htmlDate }}">{{ post.date | readableDate }}</time>
             <span>{{ post.data.category | escape }}</span>

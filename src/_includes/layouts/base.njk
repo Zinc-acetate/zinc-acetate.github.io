@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="{{ (description or site.description) | escape }}">
-    <meta name="theme-color" content="#f3f3ef">
+    <meta name="theme-color" content="#eef1ef">
     <meta property="og:title" content="{% if title %}{{ title | escape }} · {% endif %}{{ site.name | escape }}">
     <meta property="og:description" content="{{ (description or site.description) | escape }}">
     <meta property="og:type" content="{% if layout == 'layouts/post.njk' %}article{% else %}website{% endif %}">
@@ -23,16 +23,17 @@
         (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     </script>
   </head>
-  <body>
+  <body class="{% if page.url == '/' %}home-page{% else %}inner-page{% endif %}">
+    <div class="page-progress" data-scroll-progress aria-hidden="true"></div>
     <a class="skip-link" href="#main">跳到主要内容</a>
 
     <header class="site-header">
       <div class="header-inner">
         <a class="brand" href="/" aria-label="Zinc Acetate 博客首页">
-          <span class="brand-mark" aria-hidden="true">ZA</span>
+          <span class="brand-mark" aria-hidden="true"><i></i>ZA</span>
           <span class="brand-copy">
             <strong>Zinc Acetate</strong>
-            <small>Algorithm Notes</small>
+            <small>Algorithm System / Notes</small>
           </span>
         </a>
 
@@ -75,6 +76,10 @@
         <div>
           <strong>{{ site.name }}</strong>
           <span>记录训练、比赛与思考。</span>
+        </div>
+        <div class="footer-status">
+          <i aria-hidden="true"></i>
+          <span>STATIC SYSTEM / ONLINE</span>
         </div>
         <div class="footer-links">
           <a href="/feed.xml">RSS</a>
