@@ -25,12 +25,12 @@ permalink: /projects/index.html
     </header>
     <div class="project-grid">
 {% for project in projects %}
-      <a class="project-card" href="{{ project.html_url }}" target="_blank" rel="noreferrer" data-reveal data-pointer-depth>
+      <a class="project-card" href="{{ project.html_url }}" target="_blank" rel="noreferrer" data-reveal data-pointer-depth title="{{ project.name | escape }}">
         <div class="project-topline">
           <span>{{ project.language | escape }}</span>
           <i data-lucide="arrow-up-right" aria-hidden="true"></i>
         </div>
-        <div>
+        <div class="project-body">
           <h3>{{ project.name | escape }}</h3>
           <p>{{ project.description | escape }}</p>
         </div>
