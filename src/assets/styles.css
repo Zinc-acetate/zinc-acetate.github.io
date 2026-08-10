@@ -2398,6 +2398,7 @@ body::before {
 }
 
 .post-read {
+  transform: translateX(-0.65rem);
   font-family: var(--font-mono);
   font-size: 0.64rem;
 }
