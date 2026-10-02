@@ -117,6 +117,8 @@ pinOrder: 10
 - `src/_includes/layouts/`：公共页面模板
 - `src/assets/styles.css`：全站样式
 - `src/assets/script.js`：导航、搜索、实时数据和项目加载
+- `src/assets/site-effects.mjs`：按屏幕位置排序、可重复播放的入场动画，以及电路背景和指针交互
+- `src/assets/motion.css`：动效时长、缓动与过渡样式，支持减少动态效果和打印模式
 - `src/index.njk`：首页
 - `src/archive.njk`：文章归档
 - `src/projects.njk`：项目页面

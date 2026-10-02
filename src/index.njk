@@ -35,7 +35,7 @@ description: Zinc Acetate 的算法竞赛博客，记录 ACM 训练、比赛复�
       </dl>
     </div>
 
-    <div class="identity-panel" data-reveal data-reveal-delay="2">
+    <div class="identity-panel" data-reveal>
       <div class="identity-visual" data-pointer-depth>
         <span class="identity-corner identity-corner-top" aria-hidden="true"></span>
         <img src="/assets/avatar.png" alt="Zinc Acetate 的头像" width="460" height="460">
@@ -85,7 +85,7 @@ description: Zinc Acetate 的算法竞赛博客，记录 ACM 训练、比赛复�
 
       <div class="post-list">
 {% for post in collections.blogPosts | head(4) %}
-          <article class="post-row" data-reveal>
+          <article class="post-row" data-reveal data-pointer-surface>
             <div class="post-date">
               <time datetime="{{ post.date | htmlDate }}">{{ post.date | readableDate }}</time>
               <span>{{ post.data.category | escape }}</span>
@@ -106,7 +106,7 @@ description: Zinc Acetate 的算法竞赛博客，记录 ACM 训练、比赛复�
       </div>
     </div>
 
-    <aside class="profile-column" aria-labelledby="profile-title" data-reveal data-reveal-delay="2">
+    <aside class="profile-column" aria-labelledby="profile-title" data-reveal>
       <p class="section-label">02 / PROFILE</p>
       <h2 id="profile-title">赛场坐标</h2>
       <p>把一道题想明白，把一场比赛复盘清楚。这个博客记录其中的过程。</p>
@@ -127,7 +127,7 @@ description: Zinc Acetate 的算法竞赛博客，记录 ACM 训练、比赛复�
 </section>
 
 <section class="project-entry-section" aria-label="项目页面入口">
-  <a class="page-width project-entry" href="/projects/" data-reveal>
+  <a class="page-width project-entry" href="/projects/" data-reveal data-pointer-surface>
     <span>
       <small>03 / PROJECTS</small>
       <strong>代码与项目</strong>

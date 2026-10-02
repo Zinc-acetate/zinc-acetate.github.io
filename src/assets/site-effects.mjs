@@ -1,15 +1,16 @@
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 const FINE_POINTER_QUERY = "(pointer: fine)";
 
-function matchesMedia(windowObject, query) {
-  return Boolean(windowObject?.matchMedia?.(query).matches);
-}
-
 export function initRevealEffects({
   document: documentObject = globalThis.document,
   window: windowObject = globalThis.window,
 } = {}) {
   const root = documentObject?.documentElement;
+  documentObject?.querySelectorAll?.("[data-reveal-content]").forEach((container) => {
+    [...container.children].forEach((child) => {
+      if (!child.matches("script, style, hr")) child.setAttribute("data-reveal", "");
+    });
+  });
   const targets = [...(documentObject?.querySelectorAll?.("[data-reveal]") ?? [])];
 
   if (!root || !targets.length || root.dataset.revealEffects === "ready") {
@@ -17,44 +18,107 @@ export function initRevealEffects({
   }
 
   root.dataset.revealEffects = "ready";
-  targets.forEach((target, index) => {
-    target.style.setProperty(
-      "--reveal-order",
-      target.dataset.revealDelay || String(Math.min(index % 5, 4)),
-    );
-  });
-
   const revealAll = () => {
     root.classList.remove("reveal-ready");
     targets.forEach((target) => target.classList.add("is-revealed"));
   };
-
-  if (
-    matchesMedia(windowObject, REDUCED_MOTION_QUERY) ||
-    typeof windowObject?.IntersectionObserver !== "function"
-  ) {
+  if (typeof windowObject?.IntersectionObserver !== "function") {
     revealAll();
     return { active: false, disconnect() {} };
   }
 
-  root.classList.add("reveal-ready");
-  const observer = new windowObject.IntersectionObserver(
+  const preference = windowObject.matchMedia?.(REDUCED_MOTION_QUERY);
+  let frame = 0;
+  let active = false;
+  const viewportHeight = () => windowObject.innerHeight || root.clientHeight;
+  const reveal = (target, delay = 0) => {
+    target.style.setProperty("--reveal-delay", `${delay}ms`);
+    target.classList.add("is-revealed");
+  };
+  // Read geometry together, then write styles. DOM order and observer callback
+  // order need not match a responsive grid's visual reading order.
+  const flush = () => {
+    frame = 0;
+    if (!active) return;
+    const height = viewportHeight();
+    const batch = targets
+      .filter((target) => !target.classList.contains("is-revealed"))
+      .map((target) => ({ target, bounds: target.getBoundingClientRect() }))
+      .filter(({ bounds }) => bounds.bottom >= 0 && bounds.top <= height - 24)
+      .sort((a, b) => a.bounds.top - b.bounds.top || a.bounds.left - b.bounds.left);
+    batch.forEach(({ target }, index) => reveal(target, Math.min(index * 55, 220)));
+  };
+  const schedule = () => {
+    if (active && !frame) frame = windowObject.requestAnimationFrame(flush);
+  };
+  const enterObserver = new windowObject.IntersectionObserver(
     (entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add("is-revealed");
-        observer.unobserve(entry.target);
+      if (entries.some((entry) => entry.isIntersecting)) schedule();
+    },
+    { rootMargin: "0px 0px -24px 0px", threshold: 0 },
+  );
+  // A separate exit boundary provides hysteresis: changing opacity/translate
+  // near the screen edge cannot repeatedly toggle the entrance animation.
+  const exitObserver = new windowObject.IntersectionObserver(
+    (entries) => {
+      if (!active) return;
+      entries.forEach(({ target, isIntersecting, boundingClientRect }) => {
+        if (isIntersecting || target.contains(documentObject.activeElement)) return;
+        const bounds = boundingClientRect || target.getBoundingClientRect();
+        if (bounds.bottom < -80 || bounds.top > viewportHeight() + 80) {
+          target.classList.remove("is-revealed");
+          target.style.removeProperty("--reveal-delay");
+        }
       });
     },
-    { rootMargin: "0px 0px -7% 0px", threshold: 0.01 },
+    { rootMargin: "80px 0px 80px 0px", threshold: 0 },
   );
-
-  targets.forEach((target) => observer.observe(target));
+  const revealContaining = (element) => {
+    if (!element) return;
+    targets.filter((target) => target.contains(element)).forEach((target) => reveal(target));
+  };
+  const handleFocus = (event) => revealContaining(event.target);
+  const handleHash = () => {
+    try {
+      revealContaining(documentObject.getElementById(decodeURIComponent(windowObject.location.hash.slice(1))));
+    } catch { /* A malformed URL fragment must not hide readable content. */ }
+  };
+  const syncPreference = () => {
+    enterObserver.disconnect();
+    exitObserver.disconnect();
+    if (frame) windowObject.cancelAnimationFrame(frame);
+    frame = 0;
+    active = !preference?.matches;
+    if (!active) {
+      revealAll();
+      return;
+    }
+    root.classList.add("reveal-ready");
+    targets.forEach((target) => {
+      enterObserver.observe(target);
+      exitObserver.observe(target);
+    });
+    schedule();
+    handleHash();
+  };
+  documentObject.addEventListener("focusin", handleFocus);
+  windowObject.addEventListener("hashchange", handleHash);
+  windowObject.addEventListener("pageshow", schedule);
+  preference?.addEventListener?.("change", syncPreference);
+  syncPreference();
 
   return {
-    active: true,
+    get active() { return active; },
     disconnect() {
-      observer.disconnect();
+      active = false;
+      if (frame) windowObject.cancelAnimationFrame(frame);
+      enterObserver.disconnect();
+      exitObserver.disconnect();
+      documentObject.removeEventListener("focusin", handleFocus);
+      windowObject.removeEventListener("hashchange", handleHash);
+      windowObject.removeEventListener("pageshow", schedule);
+      preference?.removeEventListener?.("change", syncPreference);
+      delete root.dataset.revealEffects;
       revealAll();
     },
   };
@@ -89,6 +153,10 @@ export function initScrollProgress({
 
   windowObject.addEventListener("scroll", schedule, { passive: true });
   windowObject.addEventListener("resize", schedule, { passive: true });
+  const resizeObserver = typeof windowObject.ResizeObserver === "function"
+    ? new windowObject.ResizeObserver(schedule)
+    : null;
+  resizeObserver?.observe(documentObject.body);
   schedule();
 
   return {
@@ -98,6 +166,7 @@ export function initScrollProgress({
       if (frame) windowObject.cancelAnimationFrame(frame);
       windowObject.removeEventListener("scroll", schedule);
       windowObject.removeEventListener("resize", schedule);
+      resizeObserver?.disconnect();
     },
   };
 }
@@ -125,21 +194,19 @@ function createSignalPaths(width, height) {
     ]);
   }
 
-  return paths;
+  return paths.map((points) => {
+    let total = 0;
+    const segments = points.slice(1).map((to, index) => {
+      const from = points[index];
+      const length = Math.hypot(to.x - from.x, to.y - from.y);
+      total += length;
+      return { from, to, length };
+    });
+    return { points, segments, total };
+  });
 }
 
-function pointAlongPath(points, progress) {
-  const segments = [];
-  let total = 0;
-
-  for (let index = 1; index < points.length; index += 1) {
-    const from = points[index - 1];
-    const to = points[index];
-    const length = Math.hypot(to.x - from.x, to.y - from.y);
-    segments.push({ from, to, length });
-    total += length;
-  }
-
+function pointAlongPath({ points, segments, total }, progress) {
   let remaining = progress * total;
   for (const segment of segments) {
     if (remaining <= segment.length) {
@@ -166,12 +233,15 @@ export function initSignalCanvas({
     return { active: false, refresh() {}, disconnect() {} };
   }
 
-  const context = canvas.getContext?.("2d");
+  let context;
+  try { context = canvas.getContext?.("2d"); } catch { /* Canvas is optional. */ }
   if (!context) return { active: false, refresh() {}, disconnect() {} };
 
   canvas.dataset.signalEffects = "ready";
-  const reducedMotion = matchesMedia(windowObject, REDUCED_MOTION_QUERY);
-  const finePointer = matchesMedia(windowObject, FINE_POINTER_QUERY);
+  const motionPreference = windowObject.matchMedia?.(REDUCED_MOTION_QUERY);
+  const pointerPreference = windowObject.matchMedia?.(FINE_POINTER_QUERY);
+  let reducedMotion = Boolean(motionPreference?.matches);
+  let finePointer = Boolean(pointerPreference?.matches);
   let width = 0;
   let height = 0;
   let deviceScale = 1;
@@ -183,6 +253,10 @@ export function initSignalCanvas({
   let targetPointerX = 0;
   let targetPointerY = 0;
   let colors;
+  let elapsed = 0;
+  let lastTick = 0;
+  let lastDraw = -Infinity;
+  let destroyed = false;
 
   const readColors = () => {
     const style = windowObject.getComputedStyle(documentObject.documentElement);
@@ -190,7 +264,6 @@ export function initSignalCanvas({
       line: style.getPropertyValue("--signal-line").trim() || "rgba(0, 128, 140, 0.2)",
       node: style.getPropertyValue("--signal-node").trim() || "#008b94",
       pulse: style.getPropertyValue("--signal-pulse").trim() || "#97d92f",
-      label: style.getPropertyValue("--signal-label").trim() || "rgba(0, 80, 84, 0.52)",
     };
   };
 
@@ -205,7 +278,8 @@ export function initSignalCanvas({
     context.lineCap = "square";
     context.lineJoin = "miter";
 
-    paths.forEach((path, index) => {
+    paths.forEach((route, index) => {
+      const path = route.points;
       context.beginPath();
       context.moveTo(path[0].x, path[0].y);
       path.slice(1).forEach((point) => context.lineTo(point.x, point.y));
@@ -222,15 +296,25 @@ export function initSignalCanvas({
       const progress = reducedMotion
         ? (index + 1) / (paths.length + 1)
         : (time * 0.000035 + index * 0.137) % 1;
-      const pulse = pointAlongPath(path, progress);
+      // Short packet trails make direction legible without filling the page
+      // with particles. Route lengths are cached on resize, not per frame.
+      if (!reducedMotion) {
+        for (let step = 8; step > 0; step -= 1) {
+          const trail = pointAlongPath(route, (progress - step * 0.004 + 1) % 1);
+          context.globalAlpha = (1 - step / 9) * 0.42;
+          context.fillStyle = colors.node;
+          context.fillRect(trail.x - 1, trail.y - 1, 3, 3);
+        }
+      }
+      const pulse = pointAlongPath(route, progress);
+      context.globalAlpha = 0.1;
       context.fillStyle = colors.pulse;
-      context.fillRect(pulse.x - 3, pulse.y - 3, 6, 6);
+      context.fillRect(pulse.x - 8, pulse.y - 8, 16, 16);
+      context.globalAlpha = 1;
+      context.fillStyle = colors.pulse;
+      context.fillRect(pulse.x - 2, pulse.y - 2, 4, 4);
     });
 
-    context.fillStyle = colors.label;
-    context.font = '10px "Cascadia Code", Consolas, monospace';
-    context.fillText("GRAPH / FLOW", Math.max(18, width * 0.055), Math.max(22, height * 0.13));
-    context.fillText("O(log n)", Math.max(18, width * 0.78), Math.max(42, height * 0.84));
     context.restore();
   };
 
@@ -244,24 +328,33 @@ export function initSignalCanvas({
     canvas.style.width = `${width}px`;
     canvas.style.height = `${height}px`;
     paths = createSignalPaths(width, height);
-    draw(windowObject.performance?.now?.() || 0);
+    draw(elapsed);
   };
 
   const syncAnimation = () => {
-    if (reducedMotion || frame || !isVisible || documentObject.hidden) return;
+    const visible = String(!destroyed && !reducedMotion && isVisible && !documentObject.hidden);
+    if (host.dataset.sceneActive !== visible) host.dataset.sceneActive = visible;
+    if (destroyed || reducedMotion || frame || !isVisible || documentObject.hidden) return;
     frame = windowObject.requestAnimationFrame((time) => {
       frame = 0;
-      pointerX += (targetPointerX - pointerX) * 0.07;
-      pointerY += (targetPointerY - pointerY) * 0.07;
-      draw(time);
+      if (lastTick) elapsed += Math.min(time - lastTick, 64);
+      lastTick = time;
+      if (time - lastDraw >= 1000 / 30) {
+        lastDraw = time;
+        pointerX += (targetPointerX - pointerX) * 0.12;
+        pointerY += (targetPointerY - pointerY) * 0.12;
+        draw(elapsed);
+      }
       syncAnimation();
     });
   };
 
   const stopAnimation = () => {
-    if (!frame) return;
-    windowObject.cancelAnimationFrame(frame);
+    if (frame) windowObject.cancelAnimationFrame(frame);
     frame = 0;
+    lastTick = 0;
+    lastDraw = -Infinity;
+    host.dataset.sceneActive = "false";
   };
 
   const handleVisibility = () => {
@@ -270,6 +363,7 @@ export function initSignalCanvas({
   };
 
   const handlePointerMove = (event) => {
+    if (reducedMotion || !finePointer) return;
     const bounds = host.getBoundingClientRect();
     targetPointerX = ((event.clientX - bounds.left) / Math.max(1, bounds.width) - 0.5) * 2;
     targetPointerY = ((event.clientY - bounds.top) / Math.max(1, bounds.height) - 0.5) * 2;
@@ -278,6 +372,16 @@ export function initSignalCanvas({
   const handlePointerLeave = () => {
     targetPointerX = 0;
     targetPointerY = 0;
+  };
+  const handlePreference = () => {
+    reducedMotion = Boolean(motionPreference?.matches);
+    finePointer = Boolean(pointerPreference?.matches);
+    handlePointerLeave();
+    pointerX = 0;
+    pointerY = 0;
+    stopAnimation();
+    draw(elapsed);
+    syncAnimation();
   };
 
   const resizeObserver = typeof windowObject.ResizeObserver === "function"
@@ -295,21 +399,22 @@ export function initSignalCanvas({
   visibilityObserver?.observe(host);
   windowObject.addEventListener("resize", resize, { passive: true });
   documentObject.addEventListener("visibilitychange", handleVisibility);
-  if (finePointer && !reducedMotion) {
-    host.addEventListener("pointermove", handlePointerMove, { passive: true });
-    host.addEventListener("pointerleave", handlePointerLeave, { passive: true });
-  }
+  host.addEventListener("pointermove", handlePointerMove, { passive: true });
+  host.addEventListener("pointerleave", handlePointerLeave, { passive: true });
+  motionPreference?.addEventListener?.("change", handlePreference);
+  pointerPreference?.addEventListener?.("change", handlePreference);
 
   resize();
   syncAnimation();
 
   return {
-    active: !reducedMotion,
+    get active() { return !destroyed && !reducedMotion; },
     refresh() {
       colors = undefined;
       resize();
     },
     disconnect() {
+      destroyed = true;
       stopAnimation();
       resizeObserver?.disconnect();
       visibilityObserver?.disconnect();
@@ -317,6 +422,9 @@ export function initSignalCanvas({
       documentObject.removeEventListener("visibilitychange", handleVisibility);
       host.removeEventListener("pointermove", handlePointerMove);
       host.removeEventListener("pointerleave", handlePointerLeave);
+      motionPreference?.removeEventListener?.("change", handlePreference);
+      pointerPreference?.removeEventListener?.("change", handlePreference);
+      delete canvas.dataset.signalEffects;
     },
   };
 }
@@ -325,60 +433,93 @@ export function initPointerDepth({
   document: documentObject = globalThis.document,
   window: windowObject = globalThis.window,
 } = {}) {
-  const targets = [...(documentObject?.querySelectorAll?.("[data-pointer-depth]") ?? [])];
-  if (
-    !targets.length ||
-    matchesMedia(windowObject, REDUCED_MOTION_QUERY) ||
-    !matchesMedia(windowObject, FINE_POINTER_QUERY)
-  ) {
-    return { active: false, disconnect() {} };
-  }
-
+  const targets = [...(documentObject?.querySelectorAll?.("[data-pointer-depth], [data-pointer-surface]") ?? [])];
+  if (!targets.length) return { active: false, disconnect() {} };
+  const motionPreference = windowObject.matchMedia?.(REDUCED_MOTION_QUERY);
+  const pointerPreference = windowObject.matchMedia?.(FINE_POINTER_QUERY);
+  let enabled = !motionPreference?.matches && Boolean(pointerPreference?.matches);
   const cleanups = [];
+  const resets = [];
   targets.forEach((target) => {
     if (target.dataset.pointerDepthEffects === "ready") return;
     target.dataset.pointerDepthEffects = "ready";
-    target.classList.add("pointer-depth-ready");
     let frame = 0;
     let nextX = 0;
     let nextY = 0;
+    let spotX = 50;
+    let spotY = 50;
 
     const render = () => {
       frame = 0;
-      target.style.setProperty("--depth-x", `${nextX.toFixed(3)}deg`);
-      target.style.setProperty("--depth-y", `${nextY.toFixed(3)}deg`);
+      if (target.hasAttribute("data-pointer-depth")) {
+        target.style.setProperty("--depth-x", `${nextX.toFixed(3)}deg`);
+        target.style.setProperty("--depth-y", `${nextY.toFixed(3)}deg`);
+      }
+      target.style.setProperty("--spot-x", `${spotX.toFixed(2)}%`);
+      target.style.setProperty("--spot-y", `${spotY.toFixed(2)}%`);
     };
 
     const handleMove = (event) => {
+      if (!enabled || event.pointerType === "touch") return;
       const bounds = target.getBoundingClientRect();
-      const x = ((event.clientX - bounds.left) / Math.max(1, bounds.width) - 0.5) * 2;
-      const y = ((event.clientY - bounds.top) / Math.max(1, bounds.height) - 0.5) * 2;
-      nextX = y * -1.35;
-      nextY = x * 1.35;
+      const x = Math.max(0, Math.min(1, (event.clientX - bounds.left) / Math.max(1, bounds.width)));
+      const y = Math.max(0, Math.min(1, (event.clientY - bounds.top) / Math.max(1, bounds.height)));
+      nextX = (y - 0.5) * -3;
+      nextY = (x - 0.5) * 3;
+      spotX = x * 100;
+      spotY = y * 100;
+      target.dataset.pointerActive = "true";
       if (!frame) frame = windowObject.requestAnimationFrame(render);
     };
 
     const reset = () => {
+      if (frame) windowObject.cancelAnimationFrame(frame);
       nextX = 0;
       nextY = 0;
-      if (!frame) frame = windowObject.requestAnimationFrame(render);
+      spotX = 50;
+      spotY = 50;
+      delete target.dataset.pointerActive;
+      render();
     };
-
+    resets.push(reset);
+    target.addEventListener("pointerenter", handleMove, { passive: true });
     target.addEventListener("pointermove", handleMove, { passive: true });
     target.addEventListener("pointerleave", reset, { passive: true });
     target.addEventListener("pointercancel", reset, { passive: true });
     cleanups.push(() => {
-      if (frame) windowObject.cancelAnimationFrame(frame);
+      reset();
+      target.removeEventListener("pointerenter", handleMove);
       target.removeEventListener("pointermove", handleMove);
       target.removeEventListener("pointerleave", reset);
       target.removeEventListener("pointercancel", reset);
+      delete target.dataset.pointerDepthEffects;
     });
   });
-
+  const syncPreference = () => {
+    enabled = !motionPreference?.matches && Boolean(pointerPreference?.matches);
+    resets.forEach((reset) => reset());
+  };
+  const handleVisibility = () => { if (documentObject.hidden) resets.forEach((reset) => reset()); };
+  motionPreference?.addEventListener?.("change", syncPreference);
+  pointerPreference?.addEventListener?.("change", syncPreference);
+  windowObject.addEventListener("blur", syncPreference);
+  documentObject.addEventListener("visibilitychange", handleVisibility);
   return {
-    active: cleanups.length > 0,
+    get active() { return enabled && cleanups.length > 0; },
     disconnect() {
+      enabled = false;
       cleanups.forEach((cleanup) => cleanup());
+      motionPreference?.removeEventListener?.("change", syncPreference);
+      pointerPreference?.removeEventListener?.("change", syncPreference);
+      windowObject.removeEventListener("blur", syncPreference);
+      documentObject.removeEventListener("visibilitychange", handleVisibility);
     },
   };
+}
+
+export function initMotionVisibility({ document: documentObject = globalThis.document } = {}) {
+  const sync = () => { documentObject.documentElement.dataset.motionPaused = String(documentObject.hidden); };
+  documentObject.addEventListener("visibilitychange", sync);
+  sync();
+  return { disconnect() { documentObject.removeEventListener("visibilitychange", sync); } };
 }

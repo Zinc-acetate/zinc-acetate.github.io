@@ -20,7 +20,7 @@ permalink: /archive/index.html
     </div>
     <div class="post-list archive-list">
 {% for post in collections.blogPosts %}
-        <article class="post-row" data-reveal>
+        <article class="post-row" data-reveal data-pointer-surface>
           <div class="post-date">
             <time datetime="{{ post.date | htmlDate }}">{{ post.date | readableDate }}</time>
             <span>{{ post.data.category | escape }}</span>

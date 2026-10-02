@@ -1,0 +1,217 @@
+/* One motion vocabulary, independent of each component's layout and 3D transform. */
+:root {
+  --motion-fast: 160ms;
+  --motion-base: 260ms;
+  --motion-enter: 520ms;
+  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --spot-x: 50%;
+  --spot-y: 50%;
+}
+
+html { scrollbar-gutter: stable; }
+
+.reveal-ready [data-reveal]:not(.is-revealed) {
+  opacity: 0;
+  translate: 0 16px;
+  pointer-events: none;
+}
+
+.reveal-ready [data-reveal].is-revealed {
+  animation: content-enter var(--motion-enter) var(--motion-ease) var(--reveal-delay, 0ms) both;
+}
+
+.reveal-ready [data-reveal]:focus-within {
+  opacity: 1;
+  translate: none;
+  animation: none;
+}
+
+@keyframes content-enter {
+  from { opacity: 0; translate: 0 16px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+.icon-button,
+.button,
+.post-read a {
+  transition: transform var(--motion-base) var(--motion-ease),
+    background-color var(--motion-fast) ease, border-color var(--motion-fast) ease,
+    color var(--motion-fast) ease;
+}
+
+.button:active,
+.icon-button:active,
+.post-read a:active {
+  transform: translateY(1px) scale(0.96);
+}
+
+.identity-visual,
+.about-portrait,
+.project-card {
+  transition: transform 360ms var(--motion-ease), border-color var(--motion-base) ease,
+    box-shadow var(--motion-base) ease, background-color var(--motion-base) ease;
+}
+
+.post-row,
+.achievement-bar,
+.profile-links a,
+.external-list a,
+.search-result {
+  transition: background-color var(--motion-base) ease, color var(--motion-fast) ease;
+}
+
+.post-summary h2,
+.post-summary h3,
+.text-link svg,
+.back-link svg,
+.button svg,
+.post-read svg,
+.project-entry > span:last-child > svg,
+.profile-links svg,
+.external-list svg {
+  transition: transform var(--motion-base) var(--motion-ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .post-row[data-pointer-active],
+  .project-card[data-pointer-active],
+  .project-entry[data-pointer-active] {
+    background-image: radial-gradient(320px circle at var(--spot-x) var(--spot-y),
+      color-mix(in srgb, var(--cyan), transparent 87%), transparent 70%);
+  }
+
+  .post-row:hover .post-summary :is(h2, h3) { transform: translateX(3px); }
+  .post-row:hover .post-read svg,
+  .external-list a:hover svg,
+  .profile-links a:hover svg { transform: translate(2px, -2px); }
+  .text-link:hover svg,
+  .button:hover svg,
+  .project-entry:hover > span:last-child > svg { transform: translateX(3px); }
+  .back-link:hover svg { transform: translateX(-3px); }
+}
+
+/* Thin traces follow the existing circuit motif; body copy stays still. */
+.intro-section[data-scene-active="true"] .hero-axis-x::after {
+  animation: axis-signal-x 12s ease-in-out infinite alternate;
+}
+
+.intro-section[data-scene-active="true"] .hero-axis-y::after {
+  animation: axis-signal-y 15s ease-in-out infinite alternate;
+}
+
+.hero-axis-x::after,
+.hero-axis-y::after {
+  box-shadow: 0 0 14px color-mix(in srgb, var(--cyan), transparent 65%);
+}
+
+@keyframes axis-signal-x { to { translate: clamp(100px, 46vw, 660px) 0; } }
+@keyframes axis-signal-y { to { translate: 0 130px; } }
+
+.article-header.is-revealed::after,
+.page-heading:has(.is-revealed)::after {
+  transform-origin: left;
+  animation: trace-enter 850ms var(--motion-ease) both;
+}
+
+@keyframes trace-enter {
+  from { transform: scaleX(0); opacity: 0; }
+  to { transform: scaleX(1); opacity: 1; }
+}
+
+.overline > i { animation: signal-breathe 3.8s ease-in-out infinite; }
+@keyframes signal-breathe {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+.page-progress {
+  background: linear-gradient(90deg, var(--cyan), var(--lime));
+  box-shadow: 0 0 10px color-mix(in srgb, var(--cyan), transparent 55%);
+}
+
+.search-dialog {
+  opacity: 0;
+  transform: translateY(-12px) scale(0.985);
+  transition: opacity var(--motion-base) ease, transform var(--motion-base) var(--motion-ease),
+    overlay var(--motion-base) allow-discrete, display var(--motion-base) allow-discrete;
+}
+.search-dialog[open] { opacity: 1; transform: none; }
+.search-dialog::backdrop {
+  opacity: 0;
+  transition: opacity var(--motion-base) ease,
+    overlay var(--motion-base) allow-discrete, display var(--motion-base) allow-discrete;
+}
+.search-dialog[open]::backdrop { opacity: 1; }
+@starting-style {
+  .search-dialog[open] { opacity: 0; transform: translateY(-12px) scale(0.985); }
+  .search-dialog[open]::backdrop { opacity: 0; }
+}
+.search-result { animation: result-enter 180ms var(--motion-ease) both; }
+@keyframes result-enter {
+  from { opacity: 0; translate: 0 4px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+@media (max-width: 860px) {
+  .site-nav {
+    display: flex;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(-8px);
+    transition: opacity var(--motion-base) ease, transform var(--motion-base) var(--motion-ease),
+      visibility var(--motion-base) allow-discrete;
+  }
+  .site-nav.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: none;
+  }
+}
+
+@view-transition { navigation: auto; }
+::view-transition { pointer-events: none; }
+::view-transition-old(root) { animation: page-out 140ms ease both; }
+::view-transition-new(root) { animation: page-in 220ms ease both; }
+@keyframes page-out { to { opacity: 0; } }
+@keyframes page-in { from { opacity: 0; } to { opacity: 1; } }
+
+:root[data-motion-paused="true"] *,
+:root[data-motion-paused="true"] *::before,
+:root[data-motion-paused="true"] *::after { animation-play-state: paused !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
+  *, *::before, *::after {
+    animation: none !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal-ready [data-reveal]:not(.is-revealed),
+  .reveal-ready [data-reveal].is-revealed {
+    opacity: 1;
+    translate: none;
+    pointer-events: auto;
+  }
+  .identity-visual,
+  .about-portrait,
+  .project-card,
+  .button,
+  .icon-button,
+  .post-read a,
+  .post-summary :is(h2, h3),
+  .text-link svg,
+  .back-link svg,
+  .button svg,
+  .post-read svg,
+  .project-entry svg,
+  .profile-links svg,
+  .external-list svg { transform: none !important; }
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+}
+
+@media print {
+  [data-reveal] { opacity: 1 !important; translate: none !important; animation: none !important; }
+}

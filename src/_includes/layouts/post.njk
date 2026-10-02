@@ -15,12 +15,12 @@ layout: layouts/base.njk
     <p>{{ description | escape }}</p>
   </header>
 
-  <div class="article-layout" data-reveal>
-    <aside class="article-rail" aria-label="文章信息">
+  <div class="article-layout">
+    <aside class="article-rail" aria-label="文章信息" data-reveal>
       <span>WRITTEN BY</span>
       <strong>{{ site.author }}</strong>
     </aside>
-    <div class="article-content rendered-content">
+    <div class="article-content rendered-content" data-reveal-content>
       {{ content | safe }}
     </div>
   </div>

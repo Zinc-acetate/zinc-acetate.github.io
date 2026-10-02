@@ -3,6 +3,7 @@ import {
   renderMermaidBlocks,
 } from "/assets/content-enhancements.mjs";
 import {
+  initMotionVisibility,
   initPointerDepth,
   initRevealEffects,
   initScrollProgress,
@@ -21,6 +22,7 @@ const searchResults = document.querySelector("#search-results");
 const renderedContent = document.querySelector(".rendered-content");
 
 let mermaidScriptPromise;
+initMotionVisibility();
 const signalScene = initSignalCanvas();
 
 function loadMermaid() {
@@ -49,6 +51,7 @@ function renderIcons() {
     window.lucide.createIcons();
   }
 }
+document.querySelector("#icon-library")?.addEventListener("load", renderIcons, { once: true });
 
 function updateThemeButton() {
   const isDark = root.dataset.theme === "dark";
@@ -61,6 +64,7 @@ function updateThemeButton() {
 
 function closeNavigation() {
   nav.classList.remove("is-open");
+  nav.inert = window.innerWidth <= 860;
   navToggle.setAttribute("aria-expanded", "false");
   navToggle.setAttribute("aria-label", "打开导航");
   navToggle.innerHTML = '<i data-lucide="menu" aria-hidden="true"></i>';
@@ -70,13 +74,20 @@ function closeNavigation() {
 themeToggle.addEventListener("click", () => {
   const nextTheme = root.dataset.theme === "dark" ? "light" : "dark";
   root.dataset.theme = nextTheme;
-  localStorage.setItem("theme", nextTheme);
+  try { localStorage.setItem("theme", nextTheme); } catch { /* Theme still works without storage. */ }
   updateThemeButton();
   void renderArticleMermaid();
+  if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    themeToggle.querySelector("svg, i")?.animate?.(
+      [{ opacity: 0.3, transform: "rotate(-30deg) scale(0.8)" }, { opacity: 1, transform: "rotate(0) scale(1)" }],
+      { duration: 260, easing: "cubic-bezier(0.22, 1, 0.36, 1)" },
+    );
+  }
 });
 
 navToggle.addEventListener("click", () => {
   const isOpen = nav.classList.toggle("is-open");
+  nav.inert = !isOpen;
   navToggle.setAttribute("aria-expanded", String(isOpen));
   navToggle.setAttribute("aria-label", isOpen ? "关闭导航" : "打开导航");
   navToggle.innerHTML = `<i data-lucide="${isOpen ? "x" : "menu"}" aria-hidden="true"></i>`;
@@ -84,11 +95,19 @@ navToggle.addEventListener("click", () => {
 });
 
 nav.querySelectorAll("a").forEach((link) => link.addEventListener("click", closeNavigation));
+nav.inert = window.innerWidth <= 860;
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && nav.classList.contains("is-open")) {
+    closeNavigation();
+    navToggle.focus();
+  }
+});
 
 window.addEventListener("resize", () => {
   if (window.innerWidth > 860 && nav.classList.contains("is-open")) {
     closeNavigation();
   }
+  nav.inert = window.innerWidth <= 860 && !nav.classList.contains("is-open");
 });
 
 let searchIndex = [];
@@ -155,7 +174,11 @@ searchToggle.addEventListener("click", async () => {
 
 searchClose.addEventListener("click", () => searchDialog.close());
 searchDialog.addEventListener("click", (event) => {
-  if (event.target === searchDialog) searchDialog.close();
+  const bounds = searchDialog.getBoundingClientRect();
+  if (event.target === searchDialog &&
+    (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom)) {
+    searchDialog.close();
+  }
 });
 searchInput.addEventListener("input", (event) => renderSearchResults(event.target.value));
 

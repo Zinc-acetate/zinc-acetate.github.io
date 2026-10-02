@@ -15,6 +15,7 @@
     <link rel="icon" href="/assets/avatar.png">
     <link rel="stylesheet" href="/assets/styles.css">
     <link rel="stylesheet" href="/assets/article-content.css">
+    <link rel="stylesheet" href="/assets/motion.css">
     <link rel="stylesheet" href="/assets/katex.min.css">
     <title>{% if title %}{{ title | escape }} · {% endif %}{{ site.name | escape }}</title>
     <script>
@@ -71,7 +72,7 @@
       {{ content | safe }}
     </main>
 
-    <footer class="site-footer">
+    <footer class="site-footer" data-reveal>
       <div class="footer-inner">
         <div>
           <strong>{{ site.name }}</strong>
@@ -106,7 +107,7 @@
       </div>
     </dialog>
 
-    <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+    <script id="icon-library" async src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
     <script type="module" src="/assets/script.js"></script>
   </body>
 </html>
