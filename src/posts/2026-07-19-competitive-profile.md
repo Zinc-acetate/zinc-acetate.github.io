@@ -14,7 +14,7 @@ tags:
 
 ## Codeforces
 
-[Zinc-acetate](https://codeforces.com/profile/Zinc-acetate) 是我主要使用的 Codeforces 账号。Rating 会持续变化，请以个人主页的实时数据为准。
+Zinc-acetate 是我主要使用的 Codeforces 账号。Rating 会持续变化，请以个人主页的实时数据为准。
 
 ## AtCoder
 

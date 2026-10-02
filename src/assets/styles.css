@@ -411,7 +411,7 @@ h3 {
   border-top: 1px solid var(--line);
 }
 
-.achievement-bar a {
+.achievement-bar > [data-platform] {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 0.1rem 1rem;
@@ -422,7 +422,7 @@ h3 {
   transition: background-color 150ms ease;
 }
 
-.achievement-bar a:first-child {
+.achievement-bar > [data-platform]:first-child {
   border-left: 1px solid var(--line);
 }
 
@@ -1019,11 +1019,6 @@ h3 {
   color: var(--ink);
 }
 
-.article-rail a {
-  margin-top: 0.45rem;
-  color: var(--blue);
-}
-
 .article-content {
   min-width: 0;
   font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
@@ -1389,14 +1384,14 @@ h3 {
     grid-template-columns: 1fr;
   }
 
-  .achievement-bar a,
-  .achievement-bar a:first-child {
+  .achievement-bar > [data-platform],
+  .achievement-bar > [data-platform]:first-child {
     border-right: 1px solid var(--line);
     border-bottom: 1px solid var(--line);
     border-left: 1px solid var(--line);
   }
 
-  .achievement-bar a:last-child {
+  .achievement-bar > [data-platform]:last-child {
     border-bottom: 0;
   }
 
@@ -1500,10 +1495,6 @@ h3 {
     gap: 0.75rem;
   }
 
-  .article-rail a {
-    justify-self: end;
-  }
-
   .article-footer {
     margin-top: 3.5rem;
   }
@@ -1599,12 +1590,6 @@ h3 {
 
   .article-rail {
     grid-template-columns: auto 1fr;
-  }
-
-  .article-rail a {
-    grid-column: 1 / -1;
-    justify-self: start;
-    margin-top: 0;
   }
 
   .article-footer,
@@ -2199,7 +2184,7 @@ body::before {
   color: var(--terminal-ink);
 }
 
-.achievement-bar a {
+.achievement-bar > [data-platform] {
   position: relative;
   min-height: 100px;
   align-content: center;
@@ -2207,11 +2192,11 @@ body::before {
   border-right-color: #294139;
 }
 
-.achievement-bar a:first-child {
+.achievement-bar > [data-platform]:first-child {
   border-left: 0;
 }
 
-.achievement-bar a::before {
+.achievement-bar > [data-platform]::before {
   position: absolute;
   top: 1.2rem;
   left: 1.15rem;
@@ -3098,15 +3083,15 @@ body::before {
     grid-template-columns: 1fr;
   }
 
-  .achievement-bar a,
-  .achievement-bar a:first-child {
+  .achievement-bar > [data-platform],
+  .achievement-bar > [data-platform]:first-child {
     min-height: 88px;
     border-right: 0;
     border-bottom: 1px solid #294139;
     border-left: 0;
   }
 
-  .achievement-bar a:last-child {
+  .achievement-bar > [data-platform]:last-child {
     border-bottom: 0;
   }
 
@@ -3220,7 +3205,7 @@ body::before {
     font-size: 0.64rem;
   }
 
-  .achievement-bar a {
+  .achievement-bar > [data-platform] {
     padding-left: 3rem;
   }
 
